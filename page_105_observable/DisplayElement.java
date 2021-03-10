@@ -9,18 +9,23 @@ public interface DisplayElement {
 
 }
 
-class CurrentConditionsDisplay implements Observer, DisplayElement {
+class DisplayClass  {
 
     Observable observable;
-    private float temperature;
-    private float humidity;
 
     public String toString() {
 
-        Integer hash  = (Integer) this.hashCode();
+        Integer hash = (Integer) this.hashCode();
         return hash.toString();
 
     }
+
+}
+
+class CurrentConditionsDisplay extends DisplayClass implements Observer, DisplayElement {
+
+    private float temperature;
+    private float humidity;
 
     public CurrentConditionsDisplay(Observable observable) {
 
@@ -48,4 +53,41 @@ class CurrentConditionsDisplay implements Observer, DisplayElement {
         System.out.println("Current conditions: " + temperature + " C degrees and " + humidity + " percent.");
 
     }
+}
+
+class ForeCastDisplay extends DisplayClass implements Observer, DisplayElement {
+
+    private float currentPressure = 29.92f;
+    private float lastPressure;
+
+    public ForeCastDisplay(Observable observable) {
+
+        if (observable instanceof WeatherData) {
+
+            this.observable = observable;
+            observable.addObserver(this);
+
+        }
+        
+    }
+    
+    public void update(Observable observable, Object arg) {
+        
+        WeatherData weatherData = (WeatherData) observable;
+        lastPressure = currentPressure;
+        currentPressure = weatherData.getPressure();
+
+        display();
+
+    }
+
+    public void display() {
+
+        // Nothing
+
+        System.out.println("\nWeather station ID: " + this.toString());
+        System.out.println("Current pressure: " + currentPressure + " Last pressure: " + lastPressure);
+        
+    }
+    
 }
